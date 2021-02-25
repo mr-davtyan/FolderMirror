@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#458C78</color>
+    <color name="colorPrimaryDark">#458C78</color>
+    <color name="colorAccent">#458C78</color>
+    <color name="colorNavBar">#397363</color>
+    <color name="colorText">#535353</color>
+    <color name="colorGrey">#AAA</color>
+    <color name="colorLabel">#FFFFFF</color>
+    <color name="colorBackgroundSnackbar">#397363</color>
+    <color name="colorTextSnackbar">#FFFFFF</color>
+    <color name="colorLabelWhiteBlack">#FFFFFF</color>
+</resources>

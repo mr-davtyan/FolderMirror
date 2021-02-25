@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">FolderMirror</string>
+
+    <string name="button_source">Source</string>
+    <string name="button_compare_folders">Compare</string>
+    <string name="button_target">Target</string>
+    <string name="button_start_sync">Start Sync</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_close">Close</string>
+
+    <string name="button_show_files_copy">Show files to be copied</string>
+    <string name="button_show_files_delete">Show files to be deleted</string>
+
+    <string name="path_source_folder">Source Folder</string>
+    <string name="path_target_folder">Target Folder</string>
+
+    <string name="switch_wipe_target_folder">Wipe Target Folder</string>
+
+    <string name="text_delete_in_target">DELETE IN TARGET</string>
+    <string name="text_copy_to_target">COPY TO TARGET</string>
+    <string name="text_initializing">Initializing</string>
+    <string name="text_work_failed">Sync procedure error</string>
+    <string name="text_comparing_folder_collecting_data">Collecting data</string>
+    <string name="text_comparing_folder">Comparing the folders</string>
+    <string name="text_preparing">Preparing to Sync the folders</string>
+    <string name="text_folders_are_synced">The folders are already identical</string>
+    <string name="text_folders_are_compared">The folders have been compared</string>
+    <string name="text_folders_have_been_synced">The folders have been synced</string>
+    <string name="text_percent_of">% of</string>
+    <string name="text_folder_mark"> (DIR)</string>
+    <string name="text_comparing_result_title">Comparing Result</string>
+
+    <string name="message_click_back_again">Click Back again to Exit</string>
+    <string name="message_source_is_not_exist">Source Folder is not exist</string>
+    <string name="message_target_is_not_exist">Target Folder is not exist</string>
+    <string name="message_source_and_target_is_not_exist">Source &amp; Target Folders are not exist</string>
+    <string name="message_source_is_parent">Source Folder is parent of Target Folder</string>
+    <string name="message_target_is_parent">Target Folder is parent of Source Folder</string>
+    <string name="message_source_and_target_same">Source &amp; Target Folders are the Same</string>
+
+</resources>
