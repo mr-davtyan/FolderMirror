@@ -143,7 +143,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
 
                 mySetProgress(myTotalFileSizePercent, myContentTitle, myCurrentFileName)
 
-                if ((myTotalFileSizePercent - myTotalFileSizeLivePercentLast) > 1) {
+                if ((myTotalFileSizePercent - myTotalFileSizeLivePercentLast) > 0) {
                     myTotalFileSizeLivePercentLast = myTotalFileSizePercent
                     myNotification.buildNotificationProgress(
                         myTotalFileSizePercent.toString() +

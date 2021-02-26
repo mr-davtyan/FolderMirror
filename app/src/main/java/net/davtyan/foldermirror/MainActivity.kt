@@ -57,11 +57,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonStartSync: Button
     private lateinit var buttonStopSync: Button
 
-    private lateinit var buttonSelectSourceFolder: Button
-    private lateinit var buttonSelectTargetFolder: Button
-
     private lateinit var textSourceFolder: TextView
     private lateinit var textTargetFolder: TextView
+
+    private lateinit var layoutSource: CardView
+    private lateinit var layoutTarget: CardView
 
     private lateinit var layoutSummary: CardView
     private lateinit var textViewSummaryTitle: TextView
@@ -114,13 +114,12 @@ class MainActivity : AppCompatActivity() {
         switchWipeTargetFolder = findViewById(R.id.wipeTargetFolder)
         switchWipeTargetFolder.isChecked = myWipeTargetFolderFromPrefs
 
-        buttonSelectSourceFolder = findViewById(R.id.buttonSelectSourceFolder)
-        buttonSelectTargetFolder = findViewById(R.id.buttonSelectTargetFolder)
-
         buttonCompareFolders = findViewById(R.id.buttonCompareFolders)
         buttonStartSync = findViewById(R.id.buttonStartSync)
         buttonStopSync = findViewById(R.id.buttonStopSync)
 
+        layoutSource = findViewById(R.id.LayoutSource)
+        layoutTarget = findViewById(R.id.LayoutTarget)
         textSourceFolder = findViewById(R.id.pathSource)
         textTargetFolder = findViewById(R.id.pathTarget)
 
@@ -132,11 +131,11 @@ class MainActivity : AppCompatActivity() {
 
         if (mySourceFolderPathFromPrefs.toString() != "" && myTargetFolderPathFromPrefs.toString() != "") {
             when (checkIfPathsValid(mySourceFolder, myTargetFolder, false)) {
-                1, 4, 5, 6 -> textSourceFolder.text = ""
-                2 -> textTargetFolder.text = ""
+                1, 4, 5, 6 -> textSourceFolder.text = getString(R.string.hint_source_folder)
+                2 -> textTargetFolder.text = getString(R.string.hint_target_folder)
                 3 -> {
-                    textSourceFolder.text = ""
-                    textTargetFolder.text = ""
+                    textSourceFolder.text = getString(R.string.hint_source_folder)
+                    textTargetFolder.text = getString(R.string.hint_target_folder)
                 }
             }
         }
@@ -251,36 +250,35 @@ class MainActivity : AppCompatActivity() {
                         myProgressbar.progress = progressValue
                     }
 
-                    if (workInfo[0].state == WorkInfo.State.SUCCEEDED) {
-                        currentState = State.COMPARED
-                    } else if (workInfo[0].state == WorkInfo.State.CANCELLED) {
-                        currentState = State.WAIT
-                        cancelEverything()
-                    } else if (workInfo[0].state == WorkInfo.State.FAILED) {
-                        currentState = State.WAIT
-                        mySnackbar(snackBarView, getString(R.string.text_work_failed))
-                        myNotification.buildNotificationStatic(getString(R.string.text_work_failed))
+                    when (workInfo[0].state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            currentState = State.COMPARED
+                        }
+                        WorkInfo.State.CANCELLED -> {
+                            currentState = State.WAIT
+                            cancelEverything()
+                        }
+                        WorkInfo.State.FAILED -> {
+                            currentState = State.WAIT
+                            mySnackbar(snackBarView, getString(R.string.text_work_failed))
+                            myNotification.buildNotificationStatic(getString(R.string.text_work_failed))
 
-                        folderPrefsSaveAndUpdate(
-                            myTargetFolder,
-                            Uri.EMPTY,
-                            TARGET_FOLDER_PREFS,
-                            textTargetFolder,
-                            true
-                        )
-                        folderPrefsSaveAndUpdate(
-                            mySourceFolder,
-                            Uri.EMPTY,
-                            SOURCE_FOLDER_PREFS,
-                            textSourceFolder,
-                            true
-                        )
-
+                            folderPrefsSaveAndUpdate(
+                                myTargetFolder,
+                                Uri.EMPTY,
+                                TARGET_FOLDER_PREFS,
+                                textTargetFolder,
+                                true
+                            )
+                            folderPrefsSaveAndUpdate(
+                                mySourceFolder,
+                                Uri.EMPTY,
+                                SOURCE_FOLDER_PREFS,
+                                textSourceFolder,
+                                true
+                            )
+                        }
                     }
-//                    else if (workInfo[0].state == WorkInfo.State.RUNNING) {
-//                        if (currentState != State.COMPARING) currentState = State.COMPARING
-//                    }
-
                 }
             })
 
@@ -313,36 +311,38 @@ class MainActivity : AppCompatActivity() {
                         myProgressbar.progress = progressValue
                     }
 
-                    if (workInfo[0].state == WorkInfo.State.SUCCEEDED) {
-                        currentState = State.WAIT
-                        mySnackbar(snackBarView, getString(R.string.text_folders_have_been_synced))
-                    } else if (workInfo[0].state == WorkInfo.State.CANCELLED) {
-                        currentState = State.WAIT
-                        cancelEverything()
-                    } else if (workInfo[0].state == WorkInfo.State.FAILED) {
-
-                        folderPrefsSaveAndUpdate(
-                            myTargetFolder,
-                            Uri.EMPTY,
-                            TARGET_FOLDER_PREFS,
-                            textTargetFolder,
-                            true
-                        )
-                        folderPrefsSaveAndUpdate(
-                            mySourceFolder,
-                            Uri.EMPTY,
-                            SOURCE_FOLDER_PREFS,
-                            textSourceFolder,
-                            true
-                        )
-
-                        currentState = State.WAIT
-                        mySnackbar(snackBarView, getString(R.string.text_work_failed))
-                        myNotification.buildNotificationStatic(getString(R.string.text_work_failed))
+                    when (workInfo[0].state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            currentState = State.WAIT
+                            mySnackbar(
+                                snackBarView,
+                                getString(R.string.text_folders_have_been_synced)
+                            )
+                        }
+                        WorkInfo.State.CANCELLED -> {
+                            currentState = State.WAIT
+                            cancelEverything()
+                        }
+                        WorkInfo.State.FAILED -> {
+                            folderPrefsSaveAndUpdate(
+                                myTargetFolder,
+                                Uri.EMPTY,
+                                TARGET_FOLDER_PREFS,
+                                textTargetFolder,
+                                true
+                            )
+                            folderPrefsSaveAndUpdate(
+                                mySourceFolder,
+                                Uri.EMPTY,
+                                SOURCE_FOLDER_PREFS,
+                                textSourceFolder,
+                                true
+                            )
+                            currentState = State.WAIT
+                            mySnackbar(snackBarView, getString(R.string.text_work_failed))
+                            myNotification.buildNotificationStatic(getString(R.string.text_work_failed))
+                        }
                     }
-//                    else if (workInfo[0].state == WorkInfo.State.RUNNING) {
-//                        if (currentState != State.SYNC) currentState = State.SYNC
-//                    }
 
                 }
             })
@@ -370,17 +370,27 @@ class MainActivity : AppCompatActivity() {
             startActivity(filesListIntent)
         }
 
-        buttonSelectSourceFolder.setOnClickListener {
+        layoutSource.setOnClickListener {
             currentState = State.WAIT
             startActivityForResult(intentFileTree, 1)
             cancelEverything()
         }
-
-        buttonSelectTargetFolder.setOnClickListener {
+        textSourceFolder.setOnClickListener {
+            currentState = State.WAIT
+            startActivityForResult(intentFileTree, 1)
+            cancelEverything()
+        }
+        layoutTarget.setOnClickListener {
             currentState = State.WAIT
             startActivityForResult(intentFileTree, 2)
             cancelEverything()
         }
+        textTargetFolder.setOnClickListener {
+            currentState = State.WAIT
+            startActivityForResult(intentFileTree, 2)
+            cancelEverything()
+        }
+
 
         buttonCompareFolders.setOnClickListener {
             currentState = State.WAIT
@@ -435,11 +445,12 @@ class MainActivity : AppCompatActivity() {
     private fun enableButtons(enable: Boolean) {
         switchWipeTargetFolder.isEnabled = enable
         switchWipeTargetFolder.isClickable = enable
-        buttonSelectSourceFolder.isEnabled = enable
-        buttonSelectSourceFolder.isClickable = enable
-        buttonSelectTargetFolder.isEnabled = enable
-        buttonSelectTargetFolder.isClickable = enable
         buttonCompareFolders.isEnabled = enable
+
+        layoutSource.isEnabled = enable
+        layoutTarget.isEnabled = enable
+        textSourceFolder.isEnabled = enable
+        textTargetFolder.isEnabled = enable
     }
 
     private fun progressBarIndeterminate(title: String) {
@@ -490,7 +501,7 @@ class MainActivity : AppCompatActivity() {
         uri: Uri,
         prefsString: String,
         textViewText: TextView,
-        savePrefs: Boolean = false
+        savePrefs: Boolean = false,
     ) {
         if (savePrefs) {
             folder.myFolderPath = uri

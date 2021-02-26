@@ -14,6 +14,9 @@
     <string name="path_source_folder">Source Folder</string>
     <string name="path_target_folder">Target Folder</string>
 
+    <string name="hint_source_folder">Click to select a Source Folder</string>
+    <string name="hint_target_folder">Click to select a Target Folder</string>
+
     <string name="switch_wipe_target_folder">Wipe Target Folder</string>
 
     <string name="text_delete_in_target">DELETE IN TARGET</string>
