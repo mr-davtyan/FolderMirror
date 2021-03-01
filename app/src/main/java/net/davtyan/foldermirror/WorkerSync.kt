@@ -12,8 +12,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-//var myTotalFileSize: Long = 0
-
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
@@ -32,6 +30,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
 
         myNotification.buildNotificationIndeterminate((context.getString(R.string.text_preparing)))
 
+        //deleting the files which are not exist in the source folder
         var allFilesDeleted = false
         while (!allFilesDeleted) {
             var countIteration = 0
@@ -52,11 +51,13 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
 
         myFileListToCopy.clear()
 
+        //checking the folders structure, creating new folders
         createFolderTree(
             DocumentFile.fromTreeUri(context, mySourceFolder.myFolderPath),
             DocumentFile.fromTreeUri(context, myTargetFolder.myFolderPath)
         )
 
+        //coping new files
         copyFiles()
 
         if (isWorkCancelled()) {
@@ -67,6 +68,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
         return Result.success()
     }
 
+    //checking folders structure, creating unavailable directories
     private fun createFolder(parentFolder: DocumentFile?, folderName: String): DocumentFile? {
 
         myCurrentFileName = folderName
@@ -83,6 +85,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
         }
     }
 
+    //coping a file
     private fun copyFile(
         parentFolder: DocumentFile?,
         fileName: String,
@@ -110,7 +113,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
             fileName
         )
 
-        try {
+        try {  //coping a file throng the buffer
             val `is`: InputStream? =
                 context.contentResolver.openInputStream(file.uri)
 
@@ -166,6 +169,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
         return null
     }
 
+    //sending progress to the main activity
     private fun mySetProgress(
         WorkerSyncProgressPercent: Int,
         WorkerSyncProgressTitle: String,
@@ -188,15 +192,18 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
         sourceFolder?.listFiles()?.forEach { it ->
             if (isWorkCancelled()) return Result.failure()
             if (it.isDirectory) {
-                createFolderTree(it, createFolder(targetFolder, it.name.toString()))
+                createFolderTree(
+                    it,
+                    createFolder(targetFolder, it.name.toString())
+                ) //building folders tree recursively
             } else {
-                collectFiles(it, targetFolder)
+                collectFiles(it, targetFolder) //collecting files in current folder
             }
         }
         return Result.success()
     }
 
-
+    //collecting files in current folder
     private fun collectFiles(
         file: DocumentFile, targetFolder: DocumentFile?
     ): DocumentFile? {
@@ -213,6 +220,7 @@ class WorkerSync(appContext: Context, workerParams: WorkerParameters) :
         return null
     }
 
+    //coping files from the current folder
     private fun copyFiles() {
         myFilesToCopy.myFiles.forEach {
             if (isWorkCancelled()) return

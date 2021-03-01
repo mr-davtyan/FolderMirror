@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         folderPrefsSaveAndUpdate(myTargetFolder, Uri.EMPTY, TARGET_FOLDER_PREFS, textTargetFolder)
         folderPrefsSaveAndUpdate(mySourceFolder, Uri.EMPTY, SOURCE_FOLDER_PREFS, textSourceFolder)
 
+        //checking if the last chosen folders are still avalable
         if (mySourceFolderPathFromPrefs.toString() != "" && myTargetFolderPathFromPrefs.toString() != "") {
             when (checkIfPathsValid(mySourceFolder, myTargetFolder, false)) {
                 1, 4, 5, 6 -> textSourceFolder.text = getString(R.string.hint_source_folder)
@@ -152,6 +153,7 @@ class MainActivity : AppCompatActivity() {
         myProgressbarBody = findViewById(R.id.textViewProgressBarBody)
         layoutStartStop = findViewById(R.id.layoutStartStop)
 
+        //registering current application state listener
         var currentState: State by Delegates.observable(State.WAIT) { _, _, newValue ->
             Log.w("state changed", newValue.toString())
             when (newValue) {
@@ -221,6 +223,7 @@ class MainActivity : AppCompatActivity() {
             cancelEverything()
         }
 
+        // initializing WorkManager request
         compareWorkRequest =
             OneTimeWorkRequestBuilder<WorkerCompare>()
                 .setInputData(
@@ -231,6 +234,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 .build()
 
+        // registering WorkManager status observe
         myWorkManager.getWorkInfosForUniqueWorkLiveData("COMPARE")
             .observe(this, { workInfo ->
                 if (workInfo != null && workInfo.size > 0) {
@@ -282,6 +286,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
+        // initializing WorkManager request
         copyDelWorkRequest =
             OneTimeWorkRequestBuilder<WorkerSync>()
                 .setInputData(
@@ -292,6 +297,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 .build()
 
+        // registering WorkManager status observe
         myWorkManager.getWorkInfosForUniqueWorkLiveData("SYNC")
             .observe(this, { workInfo ->
                 if (workInfo != null && workInfo.size > 0) {
@@ -352,6 +358,7 @@ class MainActivity : AppCompatActivity() {
                 or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
 
+        //setting up listeners
         switchWipeTargetFolder.setOnCheckedChangeListener { _, isChecked ->
             val editor = prefs!!.edit()
             editor.putBoolean(CHECK_MODIFY_DATE_INT_PREFS, isChecked)
@@ -375,22 +382,24 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intentFileTree, 1)
             cancelEverything()
         }
+
         textSourceFolder.setOnClickListener {
             currentState = State.WAIT
             startActivityForResult(intentFileTree, 1)
             cancelEverything()
         }
+
         layoutTarget.setOnClickListener {
             currentState = State.WAIT
             startActivityForResult(intentFileTree, 2)
             cancelEverything()
         }
+
         textTargetFolder.setOnClickListener {
             currentState = State.WAIT
             startActivityForResult(intentFileTree, 2)
             cancelEverything()
         }
-
 
         buttonCompareFolders.setOnClickListener {
             currentState = State.WAIT
@@ -426,6 +435,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //setting up the layout elements visibility depending on the current status
     private fun layoutStateWait() {
         layoutStartStop.visibility = View.GONE
         buttonStartSync.visibility = View.GONE
@@ -444,9 +454,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun enableButtons(enable: Boolean) {
         switchWipeTargetFolder.isEnabled = enable
-        switchWipeTargetFolder.isClickable = enable
         buttonCompareFolders.isEnabled = enable
-
         layoutSource.isEnabled = enable
         layoutTarget.isEnabled = enable
         textSourceFolder.isEnabled = enable
@@ -460,6 +468,7 @@ class MainActivity : AppCompatActivity() {
         myProgressbar.isIndeterminate = true
     }
 
+    //getting activity results. retrieving the chosen folder path
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
         super.onActivityResult(requestCode, resultCode, resultData)
         if (requestCode == 1) {
@@ -496,6 +505,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //saving the folders path to the preference and updating the layout
     private fun folderPrefsSaveAndUpdate(
         folder: Folder,
         uri: Uri,
@@ -522,7 +532,7 @@ class MainActivity : AppCompatActivity() {
         } else ""
     }
 
-
+    //double press on the Back button
     private var doubleBackToExitPressedOnce = false
     override fun onBackPressed() {
         if (doubleBackToExitPressedOnce) {
@@ -541,12 +551,14 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    //stopping all the works and notifications
     private fun cancelEverything() {
         myWorkManager.cancelAllWork()
         myWorkManager.pruneWork()
         myNotification.cancelAllNotifications()
     }
 
+    //check if the current directories are available
     private fun checkIfPathsValid(
         mySourceFolder: Folder,
         myTargetFolder: Folder,
@@ -605,6 +617,7 @@ class MainActivity : AppCompatActivity() {
         return myCode
     }
 
+    //custom snackbar
     private fun mySnackbar(snackBarView: View, message: String = "") {
         val mySnackbar: Snackbar =
             Snackbar.make(snackBarView, message, Snackbar.LENGTH_SHORT).setAnimationMode(
@@ -616,6 +629,7 @@ class MainActivity : AppCompatActivity() {
         mySnackbar.show()
     }
 
+    //check the permissions
     private fun shouldAskPermissions(): Boolean {
         val permission = ContextCompat.checkSelfPermission(
             this,

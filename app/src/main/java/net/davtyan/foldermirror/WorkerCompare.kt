@@ -30,6 +30,7 @@ class WorkerCompare(appContext: Context, workerParams: WorkerParameters) :
         )
         myNotification.buildNotificationIndeterminate(context.getString(R.string.text_comparing_folder))
 
+        //counting the files from the both folders
         totalFilesCount = countFilesInFolder(
             DocumentFile.fromTreeUri(
                 context,
@@ -43,6 +44,7 @@ class WorkerCompare(appContext: Context, workerParams: WorkerParameters) :
             ), 0
         )
 
+        //building files lists
         getMyFileList(switchWipeTargetFolder.isChecked, mySourceFolder)
         getMyFileList(switchWipeTargetFolder.isChecked, myTargetFolder)
 
@@ -50,6 +52,7 @@ class WorkerCompare(appContext: Context, workerParams: WorkerParameters) :
 
         currentFilesCount = 0
 
+        //comparing the files lists
         myFilesToDelete = compareFileArrays(myTargetFolder, mySourceFolder, "Files to delete")
         myFilesToCopy = compareFileArrays(mySourceFolder, myTargetFolder, "Files to copy")
 
@@ -60,6 +63,7 @@ class WorkerCompare(appContext: Context, workerParams: WorkerParameters) :
             true
         )
 
+        //building the report message
         if (!isWorkCancelled()) {
             var myContentTitle = context.getString(R.string.text_folders_are_synced)
 
@@ -110,13 +114,13 @@ class WorkerCompare(appContext: Context, workerParams: WorkerParameters) :
 
     private fun isWorkCancelled(): Boolean {
         if (this.isStopped) {
-//            Log.w("WorkCompare", "Stopped")
             myNotification.cancelAllNotifications()
             return true
         }
         return false
     }
 
+    //sending progress to the main activity
     private fun mySetProgress(
         WorkerSyncProgressPercent: Double,
         WorkerSyncProgressTitle: String,
@@ -216,7 +220,7 @@ class WorkerCompare(appContext: Context, workerParams: WorkerParameters) :
                     ""
                 )
 
-                getMyFileListFolders(
+                getMyFileListFolders( //building folders tree recursively
                     it, wipeTargetFolder,
                     "$parentFolderName$myFileNameShort/",
                     folder
