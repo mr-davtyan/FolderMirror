@@ -154,6 +154,7 @@ class MainActivity : AppCompatActivity() {
         layoutStartStop = findViewById(R.id.layoutStartStop)
 
         //registering current application state listener
+        @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE")
         var currentState: State by Delegates.observable(State.WAIT) { _, _, newValue ->
             Log.w("state changed", newValue.toString())
             when (newValue) {

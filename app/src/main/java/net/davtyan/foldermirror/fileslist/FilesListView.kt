@@ -5,8 +5,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.files_list.*
-import net.davtyan.foldermirror.R
+import net.davtyan.foldermirror.databinding.FilesListBinding
 import net.davtyan.foldermirror.myFilesToCopy
 import net.davtyan.foldermirror.myFilesToDelete
 
@@ -15,10 +14,11 @@ class FilesListView : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.files_list)
+        val binding = FilesListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val fileListTitle: TextView = findViewById(R.id.listViewTitle)
-        val buttonClose: Button = findViewById(R.id.buttonCloseFileList)
+        val fileListTitle: TextView = binding.listViewTitle
+        val buttonClose: Button = binding.buttonCloseFileList
 
         val myFileList = if (intent.getBooleanExtra("delete", false)) {
             myFilesToDelete
@@ -28,9 +28,10 @@ class FilesListView : AppCompatActivity() {
 
         var currentShowState = ShowState.NAME
 
-        fileListTitle.text = myFileList.myTitle
-        listView.adapter = FilesListAdapter(this, myFileList.myFilesNames, myFileList.myFilesSizes)
+        binding.listView.adapter =
+            FilesListAdapter(this, myFileList.myFilesNames, myFileList.myFilesSizes)
 
+        fileListTitle.text = myFileList.myTitle
         buttonClose.setOnClickListener {
             finish()
         }
@@ -40,22 +41,22 @@ class FilesListView : AppCompatActivity() {
             Toast.LENGTH_SHORT
         )
 
-        listView.setOnItemClickListener { adapterView, _, position, _ ->
+        binding.listView.setOnItemClickListener { _, _, _, _ ->
             when (currentShowState) {
                 ShowState.NAME -> {
                     currentShowState = ShowState.NAME_SHORT
-                    listView.adapter = FilesListAdapter(
+                    binding.listView.adapter = FilesListAdapter(
                         this, myFileList.myFilesNamesShort, myFileList.myFilesSizes
                     )
                 }
                 ShowState.NAME_SHORT -> {
                     currentShowState = ShowState.NAME_FULL
-                    listView.adapter =
+                    binding.listView.adapter =
                         FilesListAdapter(this, myFileList.myFilesNamesFull, myFileList.myFilesSizes)
                 }
                 ShowState.NAME_FULL -> {
                     currentShowState = ShowState.NAME
-                    listView.adapter =
+                    binding.listView.adapter =
                         FilesListAdapter(this, myFileList.myFilesNames, myFileList.myFilesSizes)
                 }
             }
